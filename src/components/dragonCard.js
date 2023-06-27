@@ -16,7 +16,8 @@ function DragonList() {
         return (
           <div key={dragon.id}>
             <img src={dragon.flickr_images[1]} alt={dragon.name} />
-            <h2>{dragon.name}</h2>
+            <h4>{dragon.name}</h4>
+            <p>{dragon.description}</p>
             <p>
               ID:
               {dragon.id}
