@@ -34,55 +34,40 @@ function DragonList() {
           setCartToLocalStorage(initialCart);
         }
       })
-      .catch((error) => error);
+      .catch((error) => console.error(error));
   }, []);
 
-  const updateCartItemStatus = (dragonId, added) => {
-    const updatedCart = cart.map((item) => {
-      if (item.id === dragonId) {
-        return { ...item, added };
-      }
-      return item;
-    });
+  const addToCart = (dragonId) => {
+    const updatedCart = cart.map((item) => (item.id === dragonId ?
+      { ...item, added: !item.added } : item));
+
     setCart(updatedCart);
     setCartToLocalStorage(updatedCart);
+
+    setMessage(
+      updatedCart.find((item) => item.id === dragonId)?.added
+        ? 'Added to cart'
+        : 'Removed from cart',
+    );
+
+    setTimeout(() => {
+      setMessage('');
+    }, 1500);
   };
-
-const addToCart = (dragonId) => {
-  const updatedCart = cart.map((item) => {
-    if (item.id === dragonId) {
-      return { ...item, added: !item.added };
-    }
-    return item;
-  });
-
-  setCart(updatedCart);
-  setCartToLocalStorage(updatedCart);
-
-  if (updatedCart.find((item) => item.id === dragonId)?.added) {
-    setMessage('Added to cart');
-  } else {
-    setMessage('Removed from cart');
-  }
-
-  setTimeout(() => {
-    setMessage('');
-  }, 1500);
-};
-
-  console.log(cart);
 
   return (
     <div>
       <h1>SpaceX Dragons</h1>
       {dragons.map((dragon) => {
-        const added =
-          cart.find((item) => item.id === dragon.id)?.added || false;
+        const added = cart.find((item) => item.id === dragon.id)?.added || false;
         return (
           <div key={dragon.id}>
             <img src={dragon.flickr_images[1]} alt={dragon.name} />
             <h2>{dragon.name}</h2>
-            <p>ID: {dragon.id}</p>
+            <p>
+              ID:
+              {dragon.id}
+            </p>
             <button type="button" onClick={() => addToCart(dragon.id)}>
               {added ? 'Remove from Cart' : 'Add to Cart'}
             </button>
@@ -100,7 +85,7 @@ DragonList.propTypes = {
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       flickr_images: PropTypes.arrayOf(PropTypes.string.isRequired),
-    })
+    }),
   ),
 };
 
