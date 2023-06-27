@@ -43,3 +43,8 @@
   flex-direction: row;
   justify-content: space-around;
 }
+
+.dragon_img {
+  height: 200px;
+  width: 200px;
+}

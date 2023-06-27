@@ -33,7 +33,7 @@ function MyProfile() {
         <h3>Dragon Added:</h3>
         {dragon ? (
           <div>
-            <img src={dragon.flickr_images[1]} alt={dragon.name} />
+            <img className="dragon_img" src={dragon.flickr_images[1]} alt={dragon.name} />
             <h4>{dragon.name}</h4>
             <p>
               ID:
