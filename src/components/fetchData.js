@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 
 function DragonList() {
   const [dragons, setDragons] = useState([]);
-  const [cart, setCart] = useState({});
+  const [cart, setCart] = useState([]);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    console.log('API request made'); // Add this console.log statement
+    console.log('API request made');
     fetch('https://api.spacexdata.com/v4/dragons')
       .then((response) => response.json())
       .then((data) => setDragons(data))
@@ -16,16 +16,14 @@ function DragonList() {
   }, []);
 
   const addToCart = (dragonId) => {
-    if (cart[dragonId]) {
-      const updatedCart = { ...cart };
-      delete updatedCart[dragonId];
+    const existingItem = cart.find((item) => item.id === dragonId);
+    if (existingItem) {
+      const updatedCart = cart.filter((item) => item.id !== dragonId);
       setCart(updatedCart);
       setMessage('Removed from cart');
     } else {
-      setCart((prevCart) => ({
-        ...prevCart,
-        [dragonId]: true,
-      }));
+      const newCartItem = { id: dragonId, added: true };
+      setCart((prevCart) => [...prevCart, newCartItem]);
       setMessage('Added to cart');
     }
     setTimeout(() => {
@@ -42,12 +40,11 @@ function DragonList() {
         <div key={dragon.id}>
           <img src={dragon.flickr_images[1]} alt={dragon.name} />
           <h2>{dragon.name}</h2>
-          <p>
-            ID:
-            {dragon.id}
-          </p>
+          <p>ID: {dragon.id}</p>
           <button type="button" onClick={() => addToCart(dragon.id)}>
-            {cart[dragon.id] ? 'Remove from Cart' : 'Add to Cart'}
+            {cart.some((item) => item.id === dragon.id)
+              ? 'Remove from Cart'
+              : 'Add to Cart'}
           </button>
           {message && <p className="blink">{message}</p>}
         </div>
