@@ -2,6 +2,7 @@
 import React, { PureComponent, useState } from 'react';
 import PropTypes from 'prop-types';
 import DragonList from './dragonCard';
+import Navbar from './navbar';
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -28,7 +29,8 @@ class Home extends PureComponent {
     const { title } = this.props;
 
     return (
-      <div>
+        <div>
+        <Navbar />
         <h1>{title}</h1>
         <Counter />
         <DragonList />
