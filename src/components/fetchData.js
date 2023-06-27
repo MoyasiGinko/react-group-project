@@ -2,6 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+function getCartFromLocalStorage() {
+  const storedCart = localStorage.getItem('cart');
+  return storedCart ? JSON.parse(storedCart) : [];
+}
+
+function setCartToLocalStorage(cart) {
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+
 function DragonList() {
   const [dragons, setDragons] = useState([]);
   const [cart, setCart] = useState([]);
@@ -11,44 +20,76 @@ function DragonList() {
     console.log('API request made');
     fetch('https://api.spacexdata.com/v4/dragons')
       .then((response) => response.json())
-      .then((data) => setDragons(data))
+      .then((data) => {
+        setDragons(data);
+        const storedCart = getCartFromLocalStorage();
+        if (storedCart.length > 0) {
+          setCart(storedCart);
+        } else {
+          const initialCart = data.map((dragon) => ({
+            id: dragon.id,
+            added: false,
+          }));
+          setCart(initialCart);
+          setCartToLocalStorage(initialCart);
+        }
+      })
       .catch((error) => error);
   }, []);
 
-  const addToCart = (dragonId) => {
-    const existingItem = cart.find((item) => item.id === dragonId);
-    if (existingItem) {
-      const updatedCart = cart.filter((item) => item.id !== dragonId);
-      setCart(updatedCart);
-      setMessage('Removed from cart');
-    } else {
-      const newCartItem = { id: dragonId, added: true };
-      setCart((prevCart) => [...prevCart, newCartItem]);
-      setMessage('Added to cart');
-    }
-    setTimeout(() => {
-      setMessage('');
-    }, 1500);
+  const updateCartItemStatus = (dragonId, added) => {
+    const updatedCart = cart.map((item) => {
+      if (item.id === dragonId) {
+        return { ...item, added };
+      }
+      return item;
+    });
+    setCart(updatedCart);
+    setCartToLocalStorage(updatedCart);
   };
+
+const addToCart = (dragonId) => {
+  const updatedCart = cart.map((item) => {
+    if (item.id === dragonId) {
+      return { ...item, added: !item.added };
+    }
+    return item;
+  });
+
+  setCart(updatedCart);
+  setCartToLocalStorage(updatedCart);
+
+  if (updatedCart.find((item) => item.id === dragonId)?.added) {
+    setMessage('Added to cart');
+  } else {
+    setMessage('Removed from cart');
+  }
+
+  setTimeout(() => {
+    setMessage('');
+  }, 1500);
+};
 
   console.log(cart);
 
   return (
     <div>
       <h1>SpaceX Dragons</h1>
-      {dragons.map((dragon) => (
-        <div key={dragon.id}>
-          <img src={dragon.flickr_images[1]} alt={dragon.name} />
-          <h2>{dragon.name}</h2>
-          <p>ID: {dragon.id}</p>
-          <button type="button" onClick={() => addToCart(dragon.id)}>
-            {cart.some((item) => item.id === dragon.id)
-              ? 'Remove from Cart'
-              : 'Add to Cart'}
-          </button>
-          {message && <p className="blink">{message}</p>}
-        </div>
-      ))}
+      {dragons.map((dragon) => {
+        const added =
+          cart.find((item) => item.id === dragon.id)?.added || false;
+        return (
+          <div key={dragon.id}>
+            <img src={dragon.flickr_images[1]} alt={dragon.name} />
+            <h2>{dragon.name}</h2>
+            <p>ID: {dragon.id}</p>
+            <button type="button" onClick={() => addToCart(dragon.id)}>
+              {added ? 'Remove from Cart' : 'Add to Cart'}
+            </button>
+            {message && <p className="blink">{message}</p>}
+          </div>
+        );
+      })}
     </div>
   );
 }
