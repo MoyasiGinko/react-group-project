@@ -1,14 +1,5 @@
-/* eslint-disable no-console */
 import { useEffect, useState } from 'react';
-
-function getCartFromLocalStorage() {
-  const storedCart = localStorage.getItem('cart');
-  return storedCart ? JSON.parse(storedCart) : [];
-}
-
-function setCartToLocalStorage(cart) {
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
+import { getCartFromLocalStorage, setCartToLocalStorage } from './localStorage';
 
 function useFetchDragons() {
   const [dragons, setDragons] = useState([]);
@@ -55,7 +46,10 @@ function useFetchDragons() {
   };
 
   return {
-    dragons, cart, addToCart, message,
+    dragons,
+    cart,
+    addToCart,
+    message,
   };
 }
 
