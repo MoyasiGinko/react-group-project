@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { PureComponent, useState } from 'react';
 import PropTypes from 'prop-types';
-import CardsDisplay from './dragonCard';
+import DragonList from './dragonCard';
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -31,7 +31,7 @@ class Home extends PureComponent {
       <div>
         <h1>{title}</h1>
         <Counter />
-        <CardsDisplay />
+        <DragonList />
       </div>
     );
   }

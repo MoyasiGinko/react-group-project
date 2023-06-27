@@ -1,6 +1,5 @@
-/* eslint-disable */
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+/* eslint-disable no-console */
+import { useEffect, useState } from 'react';
 
 function getCartFromLocalStorage() {
   const storedCart = localStorage.getItem('cart');
@@ -11,7 +10,7 @@ function setCartToLocalStorage(cart) {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function DragonList() {
+function useFetchDragons() {
   const [dragons, setDragons] = useState([]);
   const [cart, setCart] = useState([]);
   const [message, setMessage] = useState('');
@@ -38,8 +37,8 @@ function DragonList() {
   }, []);
 
   const addToCart = (dragonId) => {
-    const updatedCart = cart.map((item) => (item.id === dragonId ?
-      { ...item, added: !item.added } : item));
+    const updatedCart = cart.map((item) => (item.id === dragonId
+      ? { ...item, added: !item.added } : item));
 
     setCart(updatedCart);
     setCartToLocalStorage(updatedCart);
@@ -55,42 +54,9 @@ function DragonList() {
     }, 1500);
   };
 
-  return (
-    <div>
-      <h1>SpaceX Dragons</h1>
-      {dragons.map((dragon) => {
-        const added = cart.find((item) => item.id === dragon.id)?.added || false;
-        return (
-          <div key={dragon.id}>
-            <img src={dragon.flickr_images[1]} alt={dragon.name} />
-            <h2>{dragon.name}</h2>
-            <p>
-              ID:
-              {dragon.id}
-            </p>
-            <button type="button" onClick={() => addToCart(dragon.id)}>
-              {added ? 'Remove from Cart' : 'Add to Cart'}
-            </button>
-            {message && <p className="blink">{message}</p>}
-          </div>
-        );
-      })}
-    </div>
-  );
+  return {
+    dragons, cart, addToCart, message,
+  };
 }
 
-DragonList.propTypes = {
-  dragons: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      flickr_images: PropTypes.arrayOf(PropTypes.string.isRequired),
-    }),
-  ),
-};
-
-DragonList.defaultProps = {
-  dragons: [],
-};
-
-export default DragonList;
+export default useFetchDragons;
